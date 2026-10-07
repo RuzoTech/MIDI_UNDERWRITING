@@ -1,0 +1,68 @@
+<%- include('header') %>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <img src="/Picture1.jpg" alt="Logo" style="max-width: 200px; height: auto;">
+    </div>
+    <h2>Loan Application & Calculator</h2>
+    <form method="POST" action="/generate-quote">
+        <div class="form-group">
+            <label>Name of Applicant</label>
+            <input type="text" name="applicantName" required>
+        </div>
+        <div class="form-group">
+            <label>Surname of Applicant</label>
+            <input type="text" name="applicantSurname" required>
+        </div>
+        <div class="form-group">
+            <label>Omang/Passport Number</label>
+            <input type="text" name="omangPassport" required>
+        </div>
+        <div class="form-group">
+            <label>Monthly Salary (P)</label>
+            <input type="number" name="salary" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label>How much would you like to borrow? (P)</label>
+            <input type="number" id="loanAmount" name="loanAmount" min="4000" max="50000" step="1" required onchange="updateTerms()">
+        </div>
+        <div class="form-group">
+            <label>Loan Term</label>
+            <select id="term" name="term" required>
+                <!-- Options populated dynamically -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Funeral Policy</label>
+            <label style="font-weight: normal;"><input type="radio" name="funeralPolicy" value="Yes" checked> Yes</label>
+            <label style="font-weight: normal;"><input type="radio" name="funeralPolicy" value="No"> No</label>
+        </div>
+        <button type="submit">Generate Quote</button>
+    </form>
+    
+    <script>
+    function updateTerms() {
+        const amt = parseFloat(document.getElementById('loanAmount').value);
+        const termSelect = document.getElementById('term');
+        termSelect.innerHTML = '';
+        if (isNaN(amt)) return;
+        
+        let terms = [];
+        if (amt <= 5000) terms = [3, 6];
+        else if (amt <= 10000) terms = [3, 6, 12];
+        else if (amt <= 15000) terms = [3, 6, 12, 18];
+        else if (amt <= 20000) terms = [3, 6, 12, 18, 24];
+        else if (amt <= 40000) terms = [3, 6, 12, 18, 24, 36];
+        else if (amt <= 50000) terms = [3, 6, 12, 18, 24, 36, 48];
+        
+        terms.forEach(t => {
+            let opt = document.createElement('option');
+            opt.value = t;
+            opt.innerHTML = t + ' months';
+            termSelect.appendChild(opt);
+        });
+    }
+    // init on load
+    updateTerms();
+    </script>
+
+<%- include('footer') %>

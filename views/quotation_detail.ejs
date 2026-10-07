@@ -1,0 +1,112 @@
+<%- include('header') %>
+
+<style>
+    .quote-wrapper { max-width: 860px; margin: 0 auto; }
+    .letterhead-banner { width: 100%; margin-bottom: 16px; border-radius: 4px; display: block; }
+    .section-header {
+        background: #000; color: #d4af37; font-weight: bold;
+        padding: 7px 12px; margin: 18px 0 0 0; font-size: 13px; letter-spacing: 0.05em;
+    }
+    .detail-table { width: 100%; border-collapse: collapse; }
+    .detail-table td { padding: 7px 10px; font-size: 13px; border-bottom: 1px solid #eee; }
+    .detail-table tr:nth-child(even) td { background: #f7f7f7; }
+    .detail-table td:first-child { font-weight: bold; width: 60%; }
+    .detail-table td:last-child { text-align: right; }
+    .totals-row-dark td { background: #111 !important; color: #d4af37 !important; font-weight: bold; font-size: 14px; }
+    .totals-row-gold td { background: #d4af37 !important; color: #000 !important; font-weight: bold; font-size: 14px; }
+    .amort-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 0; }
+    .amort-table th { background: #333; color: #d4af37; padding: 6px 8px; text-align: right; }
+    .amort-table th:first-child { text-align: center; }
+    .amort-table td { padding: 5px 8px; text-align: right; border-bottom: 1px solid #e0e0e0; }
+    .amort-table td:first-child { text-align: center; }
+    .amort-table tr:nth-child(even) td { background: #f7f7f7; }
+    .action-bar { margin-top: 24px; display: flex; gap: 12px; }
+    .quote-title-bar {
+        background: #000; color: #d4af37; text-align: center;
+        font-size: 18px; font-weight: bold; letter-spacing: 0.12em;
+        padding: 10px 0; margin-bottom: 6px;
+    }
+    .ref-line { text-align: right; font-size: 11px; color: #555; margin-bottom: 6px; }
+</style>
+
+<%
+    // Safe numeric helper — works whether the DB returns number, string, or null
+    function n(val) { return parseFloat(val) || 0; }
+%>
+
+<div class="quote-wrapper">
+
+    <!-- Letterhead -->
+    <img src="/Letterhead.jpg" alt="MIDI Letterhead" class="letterhead-banner"
+         onerror="this.style.display='none'">
+
+    <div class="quote-title-bar">QUOTATION</div>
+    <div class="ref-line">
+        Ref: <strong><%= quote.serial_number %></strong>
+        &nbsp;|&nbsp; Date: <%= quote.date %> <%= quote.time %>
+        &nbsp;|&nbsp; Prepared by: <%= quote.generated_by %>
+    </div>
+
+    <!-- PERSONAL DETAILS -->
+    <div class="section-header">PERSONAL DETAILS</div>
+    <table class="detail-table">
+        <tr><td>Applicant Name &amp; Surname</td><td><%= (quote.applicant_name || '') + ' ' + (quote.applicant_surname || '') %></td></tr>
+        <tr><td>Omang / Passport No</td><td><%= quote.omang_passport || 'N/A' %></td></tr>
+        <tr><td>Monthly Salary</td><td>BWP <%= n(quote.salary).toFixed(2) %></td></tr>
+    </table>
+
+    <!-- LOAN DETAILS -->
+    <div class="section-header">LOAN DETAILS</div>
+    <table class="detail-table">
+        <tr><td>Loan Amount Requested</td><td>BWP <%= n(quote.loan_amount).toFixed(2) %></td></tr>
+        <tr><td>Loan Term</td><td><%= quote.term %> months</td></tr>
+        <tr><td>Interest Rate</td><td><%= (n(quote.interest_rate) * 100).toFixed(2) %>% per month</td></tr>
+        <tr><td>Admin Fee (8% of loan amount)</td><td>BWP <%= n(quote.admin_fee).toFixed(2) %></td></tr>
+        <tr><td>Insurance (1.42% of loan amount)</td><td>BWP <%= n(quote.insurance).toFixed(2) %></td></tr>
+        <tr><td>Funeral Policy</td><td><%= quote.funeral_policy_selection %></td></tr>
+        <tr class="totals-row-dark">
+            <td>Monthly Payment</td>
+            <td>BWP <%= n(quote.total_monthly_installment).toFixed(2) %></td>
+        </tr>
+        <tr class="totals-row-gold">
+            <td>Total Amount Payable (all costs &amp; interest included)</td>
+            <td>BWP <%= n(quote.total_collectible).toFixed(2) %></td>
+        </tr>
+    </table>
+
+    <!-- AMORTIZATION SCHEDULE -->
+    <div class="section-header">AMORTIZATION SCHEDULE</div>
+    <table class="amort-table">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Opening Balance</th>
+                <th>Principal</th>
+                <th>Interest</th>
+                <th>Closing Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% schedule.forEach(function(s) { %>
+            <tr>
+                <td><%= s.month %></td>
+                <td>BWP <%= n(s.opening).toFixed(2) %></td>
+                <td>BWP <%= n(s.principal).toFixed(2) %></td>
+                <td>BWP <%= n(s.interest).toFixed(2) %></td>
+                <td>BWP <%= n(s.closing).toFixed(2) %></td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <div class="action-bar">
+        <a href="/quotations/<%= quote.serial_number %>/download">
+            <button>&#8659; Download PDF</button>
+        </a>
+        <a href="/quotations">
+            <button style="background:#555;">&#8592; Back to Quotations</button>
+        </a>
+    </div>
+</div>
+
+<%- include('footer') %>

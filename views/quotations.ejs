@@ -1,0 +1,34 @@
+<%- include('header') %>
+
+    <h2>Loan Quotations</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Serial</th>
+                <th>Date</th>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Term</th>
+                <th>Monthly</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% quotations.forEach(q => { %>
+                <tr>
+                    <td><%= q.serial_number %></td>
+                    <td><%= q.date %></td>
+                    <td><%= q.generated_by %></td>
+                    <td>P<%= q.loan_amount.toFixed(2) %></td>
+                    <td><%= q.term %>m</td>
+                    <td>P<%= q.total_monthly_installment.toFixed(2) %></td>
+                    <td>
+                        <a href="/quotations/<%= q.serial_number %>">View</a> | 
+                        <a href="/quotations/<%= q.serial_number %>/download">PDF</a>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+<%- include('footer') %>

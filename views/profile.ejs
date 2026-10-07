@@ -1,0 +1,21 @@
+<%- include('header') %>
+
+    <h2>My Profile</h2>
+    <p><strong>Username:</strong> <%= profileUser.username %></p>
+    <p><strong>Name:</strong> <%= profileUser.name %></p>
+    <p><strong>Role:</strong> <%= profileUser.role %></p>
+    
+    <h3>Change Password</h3>
+    <% if (error) { %><div class="error"><%= error %></div><% } %>
+    <% if (success) { %><div class="success"><%= success %></div><% } %>
+    <form method="POST" action="/profile">
+        <div class="form-group">
+            <input type="password" name="currentPassword" placeholder="Current Password" required>
+        </div>
+        <div class="form-group">
+            <input type="password" name="newPassword" placeholder="New Password" required>
+        </div>
+        <button type="submit">Change Password</button>
+    </form>
+
+<%- include('footer') %>

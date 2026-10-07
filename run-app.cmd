@@ -1,0 +1,3 @@
+@echo off
+echo Starting MIDI Underwriting Engine...
+npm start
